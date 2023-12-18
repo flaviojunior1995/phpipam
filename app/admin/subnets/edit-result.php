@@ -37,7 +37,7 @@ else {
 }
 
 # if show name than description must be set
-if(@$_POST['showName']==1 && is_blank($_POST['description'])) 	{ $Result->show("danger", _("Please enter subnet description to show as name!"), true); }
+if(@$_POST['showName']==1 && strlen($_POST['description'])==0) 	{ $Result->show("danger", _("Please enter subnet description to show as name!"), true); }
 
 # we need old values for mailing
 if($_POST['action']=="edit" || $_POST['action']=="delete") {
@@ -50,7 +50,7 @@ $_POST['cidr'] = trim($_POST['subnet']);
 $_POST['id']   = $_POST['subnetId'];
 
 # get mask and subnet
-$temp = $Subnets->cidr_network_and_mask($_POST['subnet']);
+$temp = explode("/", $_POST['subnet']);
 $_POST['mask']   = trim($temp[1]);
 $_POST['subnet'] = trim($temp[0]);
 
@@ -242,7 +242,7 @@ if(sizeof($custom) > 0) {
 			}
 		}
 		//not empty
-		if($myField['Null']=="NO" && is_blank($_POST[$myField['name']])) {
+		if($myField['Null']=="NO" && strlen($_POST[$myField['name']])==0) {
 			$errors[] = "Field \"$myField[name]\" cannot be empty!";
 		}
 	}
@@ -376,7 +376,7 @@ else {
 				}
 			}
 			//not null!
-			if($myField['Null']=="NO" && is_blank($_POST[$myField['name']])) { $Result->show("danger", $myField['name']." "._("can not be empty!"), true); }
+			if($myField['Null']=="NO" && strlen($_POST[$myField['name']])==0) { $Result->show("danger", $myField['name']." "._("can not be empty!"), true); }
 
 			# save to update array
 			$values[$myField['name']] = $_POST[$myField['name']];
@@ -431,7 +431,6 @@ else {
         if(isset($_POST['showName']))       $values['showName']       = $Admin->verify_checkbox(@$_POST['showName']);
         if(isset($_POST['discoverSubnet'])) $values['discoverSubnet'] = $Admin->verify_checkbox(@$_POST['discoverSubnet']);
         if(isset($_POST['pingSubnet']))     $values['pingSubnet']     = $Admin->verify_checkbox(@$_POST['pingSubnet']);
-		if(isset($_POST['resolveDNS']))     $values['resolveDNS']     = $Admin->verify_checkbox(@$_POST['resolveDNS']);
 
         # propagate changes
 		if(is_array($Subnets->slaves) && sizeof($Subnets->slaves)>0) {
@@ -483,7 +482,7 @@ else {
 			// if zone exists do nothing, otherwise create zone
 			if ($domain===false) {
 				// use default values
-				$values = pf_json_decode($User->settings->powerDNS, true);
+				$values = json_decode($User->settings->powerDNS, true);
 				$values['name'] = $zone;
 				// create domain
 				$PowerDNS->domain_edit ("add", array("name"=>$zone,"type"=>"NATIVE"));
@@ -512,7 +511,7 @@ else {
 			// create domain
 			elseif (isset($_POST['DNSrecursive']) && $domain===false) {
 				// use default values
-				$values = pf_json_decode($User->settings->powerDNS, true);
+				$values = json_decode($User->settings->powerDNS, true);
 				$values['name'] = $zone;
 				// create domain
 				$PowerDNS->domain_edit ("add", array("name"=>$zone,"type"=>"NATIVE"));

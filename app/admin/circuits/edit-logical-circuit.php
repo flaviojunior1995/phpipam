@@ -173,7 +173,7 @@ function update_hidden_input(){
      });
 </script>
 
-<script src="js/random.js?random=<?= uniqid() ?>" type="text/javascript"></script>
+<script src="js/productive_funcs.js?random=<?= uniqid() ?>" type="text/javascript"></script>
 
 <!-- header -->
 <div class="pHeader"><?php print ucwords(_("$_POST[action]")); ?> <?php print _('Logical circuit'); ?></div>
@@ -196,7 +196,7 @@ function update_hidden_input(){
 				if( ($_POST['action'] == "edit") || ($_POST['action'] == "delete") ) {
 					print '<input type="hidden" name="id" value="'. $_POST['circuitid'] .'">'. "\n";
 				} ?>
-				<input type="hidden" name="action" value="<?php print escape_input($_POST['action']); ?>">
+				<input type="hidden" name="action" value="<?php print $_POST['action']; ?>">
 				<input type="hidden" name="csrf_cookie" value="<?php print $csrf; ?>">
 				<input type="button" value='Random' class='button' onclick="javascript:randomGroupCircuit('logical_cid',6,<?php echo "'".$configValues['CONFIG_USER_ALLOWEDRANDOMCHARS']."'" ?>)" />
 			</td>

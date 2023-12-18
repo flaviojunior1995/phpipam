@@ -136,7 +136,7 @@ class Tools extends Common_functions {
 
 		# set search query
 		$query[] = "select * from `ipaddresses` ";
-		$query[] = "where (LPAD(`ip_addr`,39,0) >= LPAD(:low,39,0) and LPAD(`ip_addr`,39,0) <= LPAD(:high,39,0))";	//ip range
+		$query[] = "where `ip_addr` between :low and :high ";	//ip range
 		$query[] = "or `hostname` like :search_term ";			//hostname
 		$query[] = "or `owner` like :search_term ";				//owner
 		# custom fields
@@ -214,7 +214,7 @@ class Tools extends Common_functions {
 		# set search query
 		$query[] = "select * from `subnets` where `description` like :search_term ";
 		# search low/high
-		$query[] = " or (LPAD(`subnet`,39,0) >= LPAD(:low,39,0) and LPAD(`subnet`,39,0) <= LPAD(:high,39,0))";
+		$query[] = " or (`subnet` >=  '$low' and `subnet` <=  '$high')";
 		# custom
 	    if(sizeof($custom_fields) > 0) {
 			foreach($custom_fields as $myField) {
@@ -228,7 +228,7 @@ class Tools extends Common_functions {
 		$query = implode("\n", $query);
 
 		# fetch
-		try { $result = $this->Database->getObjectsQuery($query, ["low"=>$low, "high"=>$high, "search_term"=>"%$search_term%"]); }
+		try { $result = $this->Database->getObjectsQuery($query, array("search_term"=>"%$search_term%")); }
 		catch (Exception $e) {
 			$this->Result->show("danger", _("Error: ").$e->getMessage());
 			return false;
@@ -246,9 +246,6 @@ class Tools extends Common_functions {
 	 * @return array
 	 */
 	private function search_subnets_inside($search_term, $high, $low) {
-		if (is_blank($high) || is_blank($low))
-			return [];
-
 		# subnets class
 		$Subnets = new Subnets($this->Database);
 
@@ -473,6 +470,8 @@ class Tools extends Common_functions {
 	    return $search;
 	}
 
+
+
 	/**
 	 * Search for circuit providers
 	 *
@@ -566,10 +565,10 @@ class Tools extends Common_functions {
 		# else calculate options
 		else {
 			# if subnet is not provided maybe wildcard is, so explode it to array
-			$address = pf_explode(".", $address);
+			$address = explode(".", $address);
             # remove empty
             foreach($address as $k=>$a) {
-                if (is_blank($a))  unset($address[$k]);
+                if (strlen($a)==0)  unset($address[$k]);
             }
 
 			# 4 pieces is ok, host
@@ -760,7 +759,7 @@ class Tools extends Common_functions {
 
 		$dbversion = strstr($schema, 'UPDATE `settings` SET `dbversion` =');
 		$dbversion = strstr($dbversion, ';', true);
-		$dbversion = pf_explode("=", $dbversion);
+		$dbversion = explode("=", $dbversion);
 
 		return intval($dbversion[1]);
 	}
@@ -781,7 +780,7 @@ class Tools extends Common_functions {
 		$definition = trim(strstr($definition, ";" . "\n", true));
 
 		# get each line to array
-		$definition = pf_explode("\n", $definition);
+		$definition = explode("\n", $definition);
 
 		# go through,if it begins with ` use it !
 		$out = array();
@@ -806,7 +805,7 @@ class Tools extends Common_functions {
 		$schema = $this->read_db_schema();
 
 		# get definitions to array, explode with CREATE TABLE `
-		$creates = pf_explode("CREATE TABLE `", $schema);
+		$creates = explode("CREATE TABLE `", $schema);
 		# fill tables array
 		$tables = array();
 		foreach($creates as $k=>$c) {
@@ -1117,14 +1116,14 @@ class Tools extends Common_functions {
 
 				$subnet = $this->fetch_object("subnets", "id", $v);
 				$mail["Subnet"]  = $this->transform_address ($subnet->subnet, "dotted")."/".$subnet->mask;
-				$mail["Subnet"] .= !is_blank($subnet->description) ? " - ".$subnet->description : "";
+				$mail["Subnet"] .= strlen($subnet->description)>0 ? " - ".$subnet->description : "";
 			}
 			// ip_addr
 			elseif ($k=="ip_addr") {
 				// add title
 				$mail["s_title_2"] = "<br>"._("Address details");
 
-				if (!is_blank($v)) {
+				if (strlen($v)>0) {
 					$mail['IP address'] = $this->transform_address($v, "dotted");
 				} else {
 					$mail['IP address'] = _("Automatic");
@@ -1167,13 +1166,13 @@ class Tools extends Common_functions {
 			}
 			// nameservers
 			elseif ($k=="dns") {
-				if (!is_blank($v)) {
+				if (strlen($v)>0) {
 				$mail['DNS servers'] = $v;
 				}
 			}
 			// vlans
 			elseif ($k=="vlan") {
-				if (!is_blank($v)) {
+				if (strlen($v)>0) {
 				$mail['VLAN'] = $v;
 				}
 			}
@@ -1334,7 +1333,7 @@ class Tools extends Common_functions {
 		$file = trim(strstr($file, "# Dump of table", true));
 
 		//get proper line
-		$file = pf_explode("\n", $file);
+		$file = explode("\n", $file);
 		foreach($file as $k=>$l) {
 			if(strpos(trim($l), "$field`")==1) {
 				$res = trim($l, ",");
@@ -1430,7 +1429,7 @@ class Tools extends Common_functions {
 		$schema = $this->read_db_schema();
 
 		# get definitions to array, explode with CREATE TABLE `
-		$creates = pf_explode("CREATE TABLE `", $schema);
+		$creates = explode("CREATE TABLE `", $schema);
 
 		$indexes = array ();
 		foreach($creates as $k=>$c) {
@@ -1439,7 +1438,7 @@ class Tools extends Common_functions {
 
 			$table = strstr($c, "`", true);
 
-			$definitions = pf_explode("\n", $c);
+			$definitions = explode("\n", $c);
 			foreach($definitions as $definition) {
 				if (preg_match('/(KEY|UNIQUE KEY) +`(.*)` +\(/', $definition, $matches)) {
 					$indexes[$table][] = $matches[2];
@@ -1511,7 +1510,7 @@ class Tools extends Common_functions {
 		$file = trim(strstr($file, "# Dump of table", true));
 
 		//get proper line
-		$file = pf_explode("\n", $file);
+		$file = explode("\n", $file);
 
 		$line = false;
 		foreach($file as $k=>$l) {
@@ -1644,7 +1643,7 @@ class Tools extends Common_functions {
 		// if ok
 		if ($xml!==false) {
 			// encode to json
-			$json = pf_json_decode(json_encode($xml));
+			$json = json_decode(json_encode($xml));
 			// save all releases
 			$this->phpipam_releases = $json->entry;
 			// check for latest release
@@ -1871,7 +1870,7 @@ class Tools extends Common_functions {
 		//uncompress
 	    $uncompressed = $this->Net_IPv6->removeNetmaskSpec($this->Net_IPv6->uncompress($addresses));
 	    $len = $pflen / 4;
-	    $parts = pf_explode(':', $uncompressed);
+	    $parts = explode(':', $uncompressed);
 	    $res = '';
 	    foreach($parts as $part) {
 	        $res .= str_pad($part, 4, '0', STR_PAD_LEFT);
@@ -1957,12 +1956,12 @@ class Tools extends Common_functions {
      */
     public function translate_nat_objects_for_display ($json_objects, $nat_id = false, $admin = false, $object_type = false, $object_id=false) {
         // to array "subnets"=>array(1,2,3)
-        $objects = pf_json_decode($json_objects, true);
+        $objects = json_decode($json_objects, true);
         // init out array
         $out = array();
         // set ping statuses for warning and offline
         $this->get_settings();
-        $statuses = pf_explode(";", $this->settings->pingStatus);
+        $statuses = explode(";", $this->settings->pingStatus);
         // check
         if(is_array($objects)) {
             if(sizeof($objects)>0) {
@@ -1987,9 +1986,7 @@ class Tools extends Common_functions {
                                     // append status
                                     if ($snet->pingSubnet=="1") {
                                         //calculate
-                                    	if(!is_null($item->lastSeen)) {
-	                                        $tDiff = time() - strtotime($item->lastSeen);
-    									}
+                                        $tDiff = time() - strtotime($item->lastSeen);
                                         if($item->excludePing=="1" )    { $hStatus = "padded"; $hTooltip = ""; }
                                         elseif(is_null($item->lastSeen)) { $hStatus = "neutral"; $hTooltip = "rel='tooltip' data-container='body' data-html='true' data-placement='left' title='"._("Address was never online")."'"; }
                                         elseif($item->lastSeen == "0000-00-00 00:00:00") { $hStatus = "neutral"; 	$hTooltip = "rel='tooltip' data-container='body' data-html='true' data-placement='left' title='"._("Address is offline")."<hr>"._("Last seen").": "._("Never")."'";}
@@ -2043,8 +2040,8 @@ class Tools extends Common_functions {
         if(is_array($all_nats)) {
             if (sizeof($all_nats)>0) {
                 foreach ($all_nats as $n) {
-                    $src = pf_json_decode($n->src, true);
-                    $dst = pf_json_decode($n->dst, true);
+                    $src = json_decode($n->src, true);
+                    $dst = json_decode($n->dst, true);
 
                     // src
                     if(is_array($src)) {
@@ -2108,13 +2105,13 @@ class Tools extends Common_functions {
 
         // description
         $n->description = str_replace("\n", "<br>", $n->description);
-        $n->description = !is_blank($n->description) ? "<br>$n->description" : "";
+        $n->description = strlen($n->description)>0 ? "<br>$n->description" : "";
 
         // device
         if (strlen($n->device)) {
             if($n->device !== 0) {
                 $device = $this->fetch_object ("devices", "id", $n->device);
-                $description = !is_blank($device->description) ? " ($device->description)" : "";
+                $description = strlen($device->description)>0 ? " ($device->description)" : "";
                 $n->device = $device===false ? "/" : "<a href='".create_link("tools", "devices", $device->id)."'>$device->hostname</a> ($device->ip_addr) <span class='text-muted'>$description</span>";
             }
         }
@@ -2137,7 +2134,7 @@ class Tools extends Common_functions {
         $html[] = "</tr>";
 
         // append ports
-        if(($n->type=="static" || $n->type=="destination") && (!is_blank($n->src_port) && !is_blank($n->dst_port))) {
+        if(($n->type=="static" || $n->type=="destination") && (strlen($n->src_port)>0 && strlen($n->dst_port)>0)) {
             $sources      = implode("<br>", $sources)." :".$n->src_port;
             $destinations = implode("<br>", $destinations)." :".$n->dst_port;
         }
@@ -2369,7 +2366,7 @@ class Tools extends Common_functions {
 
 		# set hidden fields
 		$this->get_settings ();
-		$hidden_fields = pf_json_decode($this->settings->hiddenCustomFields, true);
+		$hidden_fields = json_decode($this->settings->hiddenCustomFields, true);
 		$hidden_fields = is_array($hidden_fields['subnets']) ? $hidden_fields['subnets'] : array();
 
 		# set html array
@@ -2430,10 +2427,10 @@ class Tools extends Common_functions {
 			$count = count( $parent_stack ) + 1;
 
 			# description
-			$name = is_blank($option['name']) ? "/" : $option['name'];
+			$name = strlen($option['name'])==0 ? "/" : $option['name'];
 
 			# print table line
-			if(!is_blank($option['prefix'])) {
+			if(strlen($option['prefix']) > 0) {
     			# count change?
 				$html[] = "<tr class='level$count'>";
 
@@ -2503,7 +2500,7 @@ class Tools extends Common_functions {
 							}
 							//text
 							elseif($field['type']=="text") {
-								if(!is_blank($option[$field['name']]))		{ $html[] = "<i class='fa fa-gray fa-comment' rel='tooltip' data-container='body' data-html='true' title='".str_replace("\n", "<br>", $option[$field['name']])."'>"; }
+								if(strlen($option[$field['name']])>0)		{ $html[] = "<i class='fa fa-gray fa-comment' rel='tooltip' data-container='body' data-html='true' title='".str_replace("\n", "<br>", $option[$field['name']])."'>"; }
 								else												{ $html[] = ""; }
 							}
 							else {
@@ -2762,7 +2759,7 @@ class Tools extends Common_functions {
 	 * @return mixed
 	 */
 	public function explode_filtered($delimiter, $string) {
-	    $ret = pf_explode($delimiter, $string);
+	    $ret = explode($delimiter, $string);
 	    if (!is_array($ret))
 	        return false;
 	    return array_filter($ret);
@@ -3038,6 +3035,9 @@ class Tools extends Common_functions {
 		// return
 		return sizeof($circuits)>0 ? $circuits : false;
 	}
+
+
+
 
 	/**
 	 * Fetch all members of logical circuit
@@ -3385,7 +3385,7 @@ class Tools extends Common_functions {
         		//for multicast
         		$mac = $data->val($m,'F');
         		if ($this->settings->enableMulticast=="1") {
-            		if (is_blank($data->val($m,'F')) && $this->Subnets->is_multicast($data->val($m,'A')))    {
+            		if (strlen($data->val($m,'F'))==0 && $this->Subnets->is_multicast($data->val($m,'A')))    {
                 		$mac = $this->Subnets->create_multicast_mac ($data->val($m,'A'));
                     }
                 }
@@ -3439,7 +3439,7 @@ class Tools extends Common_functions {
         	else {
             	# mac
         		if ($this->settings->enableMulticast=="1") {
-            		if (is_blank($field[5]) && $this->Subnets->is_multicast($field[0]))  {
+            		if (strlen($field[5])==0 && $this->Subnets->is_multicast($field[0]))  {
                 		$field[5] = $this->Subnets->create_multicast_mac ($field[0]);
                     }
         		}
@@ -3486,7 +3486,7 @@ class Tools extends Common_functions {
 	 * @param object $subnet
 	 * @return void
 	 */
-	private function parse_validate_file ($outFile, $subnet) {
+	private function parse_validate_file ($outFile = array(), $subnet) {
     	$result = array();
     	$errors = 0;
 
@@ -3512,8 +3512,8 @@ class Tools extends Common_functions {
                     if ($this->Subnets->is_subnet_inside_subnet ($field[0]."/" . $ipsm, $this->transform_address($subnet->subnet, "dotted")."/".$subnet->mask)==false)    { $class = "danger"; $errors++; }
                 }
             	// make sure mac does not exist
-                if ($this->settings->enableMulticast=="1" && is_blank($class)) {
-                    if (!is_blank($field[5]) && $this->Subnets->is_multicast($field[0])) {
+                if ($this->settings->enableMulticast=="1" && strlen($class)==0) {
+                    if (strlen($field[5])>0 && $this->Subnets->is_multicast($field[0])) {
                         if($this->Subnets->validate_multicast_mac ($field[5], $subnet->sectionId, $subnet->vlanId, MCUNIQUE)!==true) {
                             $errors++; $class = "danger";
                         }

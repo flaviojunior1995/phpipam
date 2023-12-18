@@ -47,7 +47,7 @@ if( !(preg_match('/^GCID[0-9][0-9][0-9][0-9][0-9][0-9]$/', $circuit['logical_cid
 # Validate to make sure there aren't duplicates of the same circuit in the list of circuit ids
 # Create list of member circuit IDs for mapping
 $_POST['circuit_list'] = str_replace("undefined.", "", $_POST['circuit_list']);
-$id_list = $_POST['circuit_list']!=="" ? pf_explode("." , rtrim($_POST['circuit_list'],".")) : [];
+$id_list = $_POST['circuit_list']!=="" ? explode("." , rtrim($_POST['circuit_list'],".")) : [];
 if(sizeof($id_list ) != sizeof(array_unique($id_list))){  $Result->show("danger", _('Remove duplicates of circuit').'!', true); }
 if(($circuit['action'] == "add" && sizeof($id_list ) == 0)){  $Result->show("danger", _('No circuits selected').'!', true); }
 
@@ -65,7 +65,7 @@ if(sizeof($custom) > 0) {
 			}
 		}
 		//not null!
-		if($myField['Null']=="NO" && is_blank($circuit[$myField['name']])) { $Result->show("danger", $myField['name']." "._("can not be empty").'!', true); }
+		if($myField['Null']=="NO" && strlen($circuit[$myField['name']])==0) { $Result->show("danger", $myField['name']." "._("can not be empty").'!', true); }
 		# save to update array
 		$update[$myField['name']] = $circuit[$myField['nameTest']];
 	}

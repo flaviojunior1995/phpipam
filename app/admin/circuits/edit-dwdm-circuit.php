@@ -75,7 +75,7 @@ $(document).ready(function(){
 });
 </script>
 
-<script src="js/random.js?random=<?= uniqid() ?>" type="text/javascript"></script>
+<script src="js/productive_funcs.js?random=<?= uniqid() ?>" type="text/javascript"></script>
 
 <!-- header -->
 <div class="pHeader"><?php print ucwords(_("$_POST[action]")); ?> <?php print _('Circuit'); ?></div>

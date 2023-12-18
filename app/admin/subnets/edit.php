@@ -63,7 +63,7 @@ else {
         $_POST['subnetId'] = $_POST['freespaceMSID'];
     }
 	# for selecting master subnet if added from subnet details and slave inheritance!
-	if(!is_blank($_POST['subnetId'])) {
+	if(strlen($_POST['subnetId']) > 0) {
     	$subnet_old_temp = (array) $Subnets->fetch_subnet(null, $_POST['subnetId']);
     	$subnet_old_details['masterSubnetId'] 	= @$subnet_old_temp['id'];                // same master subnet ID for nested
     	// slave subnet inheritance
@@ -181,12 +181,12 @@ $("input[name='subnet']").change(function() {
         	if (isset($subnet_old_temp['subnet'])&&$subnet_old_temp['isFolder']!="1")	{ $cidr = $Subnets->transform_to_dotted($subnet_old_temp['subnet']).'/'.($subnet_old_temp['mask']+1);} 		//for nested
         	if (isset($subnet_old_temp['subnet']) && ($showDropMenuFull)) 				{ $dropdown_menu = $Subnets->subnet_dropdown_print_available($_POST['sectionId'], $_POST['subnetId']);  }
 
-        	if (@$_POST['location'] == "ipcalc") 	{ $cidr = !is_blank($_POST['bitmask']) ? $_POST['subnet'].'/'.$_POST['bitmask'] : $_POST['subnet']; }  														//from ipcalc
+        	if (@$_POST['location'] == "ipcalc") 	{ $cidr = strlen($_POST['bitmask'])>0 ? $_POST['subnet'].'/'.$_POST['bitmask'] : $_POST['subnet']; }  														//from ipcalc
             if ($_POST['action'] != "add") 			{ $cidr = $Subnets->transform_to_dotted($subnet_old_details['subnet']).'/'.$subnet_old_details['mask']; } 	//editing existing
 
         	# reset CIDR if $showDropMenuFull
         	// if ($showDropMenuFull && strlen(@$dropdown_menu)>2) {
-	        // 	$cidr = pf_explode("\n",$dropdown_menu);
+	        // 	$cidr = explode("\n",$dropdown_menu);
 	        // 	$cidr = substr(strip_tags($cidr[1]), 2);
 	        // 	//validate
 	        // 	if ($Subnets->verify_cidr_address($cidr)===false) { unset($cidr); };
@@ -199,7 +199,7 @@ $("input[name='subnet']").change(function() {
             <?php } else { ?>
 			<div class="input-group input-w-200">
 				<input type="text" class="form-control input-sm input-w-200" name="subnet" placeholder="<?php print _('subnet in CIDR'); ?>" value="<?php print @$cidr; ?>">
-				<?php if (!is_blank($dropdown_menu)) { ?>
+				<?php if (strlen($dropdown_menu)>0) { ?>
 				<div class="input-group-btn">
 					<button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><?php print _("Select"); ?> <span class="caret"></span></button>
 					<ul class="dropdown-menu dropdown-menu-right dropdown-subnets">
@@ -279,7 +279,7 @@ $("input[name='subnet']").change(function() {
 				if ($devices!==false) {
 					foreach($devices as $device) {
 						//check if permitted in this section!
-						$sections = pf_explode(";", $device->sections);
+						$sections = explode(";", $device->sections);
 						if(in_array($_POST['sectionId'], $sections)) {
 							//if same
 							if($device->id == @$subnet_old_details['device']) 	{ print '<option value="'. $device->id .'" selected>'. $device->hostname .'</option>'. "\n"; }
@@ -337,13 +337,13 @@ $("input[name='subnet']").change(function() {
         if($vrfs!=false) {
 	        foreach($vrfs as $vrf) {
     	        // set permitted
-    	        $permitted_sections = pf_explode(";", $vrf->sections);
+    	        $permitted_sections = explode(";", $vrf->sections);
     	        // section must be in array
-    	        if (is_blank($vrf->sections) || in_array(@$_POST['sectionId'], $permitted_sections)) {
+    	        if (strlen($vrf->sections)==0 || in_array(@$_POST['sectionId'], $permitted_sections)) {
     				//cast
     				$vrf = (array) $vrf;
     				// set description if present
-    				$vrf['description'] = !is_blank($vrf['description']) ? " ($vrf[description])" : "";
+    				$vrf['description'] = strlen($vrf['description'])>0 ? " ($vrf[description])" : "";
 
     	        	if ($vrf['vrfId'] == $subnet_old_details['vrfId']) 	{ print '<option value="'. $vrf['vrfId'] .'" selected>'.$vrf['name'].$vrf['description'].'</option>'; }
     	        	else 												{ print '<option value="'. $vrf['vrfId'] .'">'.$vrf['name'].$vrf['description'].'</option>'; }
@@ -399,7 +399,7 @@ $("input[name='subnet']").change(function() {
     			<?php
                 if($locations!==false) {
         			foreach($locations as $l) {
-        				if(isset($subnet_old_details['location']) && $subnet_old_details['location'] == $l->id)	{ print "<option value='$l->id' selected='selected'>$l->name</option>"; }
+        				if($subnet_old_details['location'] == $l->id)	{ print "<option value='$l->id' selected='selected'>$l->name</option>"; }
         				else					{ print "<option value='$l->id'>$l->name</option>"; }
         			}
     			}
