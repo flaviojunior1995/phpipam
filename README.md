@@ -7,31 +7,18 @@ It is ajax-based using jQuery libraries, it uses php scripts and javascript and 
 to be able to display javascript quickly and correctly.
 
 ## Links
- - [Features & Tools](https://phpipam.net/documents/features/)
- - [Requirements & Installation](https://phpipam.net/documents/installation/)
- - [API guide](https://phpipam.net/api-documentation/)
- - [Update](https://phpipam.net/documents/upgrade/)
- - [Demo page](http://demo.phpipam.net) (Login: `Admin / ipamadmin`)
+ - [Features & Tools](https://github.com/flaviojunior1995/phpipam/blob/master/misc/FEATURES.md)
+ - [Installation](https://github.com/flaviojunior1995/phpipam/blob/master/INSTALL.md)
+ - [API documentation](https://github.com/flaviojunior1995/phpipam/blob/master/doc/API/api_documentation.md)
 
 ## Branches
- - MASTER: Current development release
- - 1.6: Productional branch for 1.6.x release
- - 1.5: Productional branch for 1.5.x release (obsolete)
- - 1.4: Productional branch for 1.4.x release (obsolete)
- - 1.3: Productional branch for 1.3.x release (obsolete)
- - 1.2: Productional branch for 1.2.x release (obsolete)
- - Other branches: Feature testing
+ - MASTER: Productional branch for 1.6.x release
 
 ## Supported PHP versions
-
 phpIPAM has been developed and tested on the following PHP versions.\
 The use of untested PHP versions is unsupported and may result in compatibility issues.
 
 - MASTER: PHP versions 7.2 to 8.3
-- 1.6.x: PHP versions 7.2 to 8.3
-- 1.5.x: PHP versions 5.4 to 7.4
-- 1.4.x: PHP versions 5.4 to 7.4
-- 1.3.x: PHP versions 5.4 to 7.1
 
 ## Supported MySQL / MariaDB versions
 
@@ -45,26 +32,16 @@ Just run `php functions/scripts/reset-admin-password.php` in the cli and enter y
 The Default credentials for a new instance of phpIPAM are the same as the credentials for
 the demo page: `Admin / ipamadmin`
 
-## Docker
-Community maintained docker images are available at https://hub.docker.com/u/phpipam
-
 ## Changelog
-See [misc/CHANGELOG](misc/CHANGELOG)
-
-## Roadmap
-See [misc/Roadmap](misc/Roadmap)
+See [CHANGELOG](https://github.com/flaviojunior1995/phpipam/blob/master/misc/CHANGELOG)
 
 ## Security
 
-See [SECURITY.md](SECURITY.md)
+See [SECURITY.md](https://github.com/flaviojunior1995/phpipam/blob/master/SECURITY.md)
 
-## Contact
-miha.petkovsek@gmail.com
 
-Special thanks are going also to the Hosterdam team (http://www.hosterdam.com) for the VPS server
-that is used for development of phpIPAM and for demo site.
-
-And also to all users that filed a bug report / feature report and helped with feature testing!
+## Edited flaviojunior1995
+<a href="https://github.com/flaviojunior1995"><img src="https://avatars.githubusercontent.com/u/53404989?v=4" width="100px;" alt="Flavio Junior"/><br /><sub><b>Flavio Junior</b></sub></a>
 
 ## License
-phpIPAM is released under the GPL v3 license, see [misc/gpl-3.0.txt](misc/gpl-3.0.txt).
+phpIPAM is released under the GPL v3 license, see [misc/gpl-3.0.txt](https://github.com/flaviojunior1995/phpipam/blob/master/misc/gpl-3.0.txt).
