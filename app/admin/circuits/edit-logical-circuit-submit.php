@@ -24,7 +24,7 @@ if($_POST['action']=="edit") {
     $User->check_module_permissions ("circuits", User::ACCESS_RW, true, false);
 }
 else {
-    $User->check_module_permissions ("circuits", User::ACCESS_RWA, true, false);
+    $User->check_module_permissions ("circuits", User::ACCESS_RW, true, false);
 }
 
 # validate csrf cookie
@@ -38,7 +38,11 @@ $circuit = $Admin->strip_input_tags($_POST);
 if($circuit['action']!="add" && !is_numeric($circuit['id'])) { $Result->show("danger", _("Invalid ID"), true); }
 
 # Logical circuit ID must be present
-if($circuit['logical_cid'] == "") 	{ $Result->show("danger", _('Logical Circuit ID is mandatory').'!', true); }
+if($circuit['logical_cid'] == "")
+{ $Result->show("danger", _('Logical Circuit ID is mandatory').'!', true); }
+
+if( !(preg_match('/^GCID[0-9][0-9][0-9][0-9][0-9][0-9]$/', $circuit['logical_cid']) ) )
+{ $Result->show("danger", _("Invalid Logical Circuit ID Form"), true); }
 
 # Validate to make sure there aren't duplicates of the same circuit in the list of circuit ids
 # Create list of member circuit IDs for mapping

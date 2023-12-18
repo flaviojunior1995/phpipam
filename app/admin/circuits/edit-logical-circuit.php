@@ -22,7 +22,7 @@ if($_POST['action']=="edit") {
     $User->check_module_permissions ("circuits", User::ACCESS_RW, true, true);
 }
 else {
-    $User->check_module_permissions ("circuits", User::ACCESS_RWA, true, true);
+    $User->check_module_permissions ("circuits", User::ACCESS_RW, true, true);
 }
 
 # create csrf token
@@ -173,9 +173,7 @@ function update_hidden_input(){
      });
 </script>
 
-
-
-
+<script src="js/random.js?random=<?= uniqid() ?>" type="text/javascript"></script>
 
 <!-- header -->
 <div class="pHeader"><?php print ucwords(_("$_POST[action]")); ?> <?php print _('Logical circuit'); ?></div>
@@ -191,15 +189,16 @@ function update_hidden_input(){
 	<table class="table table-noborder table-condensed">
 		<!-- name -->
 		<tr>
-			<td><?php print _('Circuit ID'); ?></td>
+			<td><?php print _('Group Circuit ID'); ?></td>
 			<td>
-				<input type="text" name="logical_cid" style='width:200px;' class="form-control input-sm" placeholder="<?php print _('ID'); ?>" value="<?php if(isset($logical_circuit->logical_cid)) print $Tools->strip_xss($logical_circuit->logical_cid); ?>" <?php print $readonly; ?>>
+				<input readonly='readonly' id='logical_cid' type="text" name="logical_cid" style='width:200px;' class="form-control input-sm" placeholder="<?php print _('GCID'); ?>" value="<?php if(isset($logical_circuit->logical_cid)) print $Tools->strip_xss($logical_circuit->logical_cid); ?>" <?php print $readonly; ?>>
 				<?php
 				if( ($_POST['action'] == "edit") || ($_POST['action'] == "delete") ) {
 					print '<input type="hidden" name="id" value="'. $_POST['circuitid'] .'">'. "\n";
 				} ?>
 				<input type="hidden" name="action" value="<?php print escape_input($_POST['action']); ?>">
 				<input type="hidden" name="csrf_cookie" value="<?php print $csrf; ?>">
+				<input type="button" value='Random' class='button' onclick="javascript:randomGroupCircuit('logical_cid',6,<?php echo "'".$configValues['CONFIG_USER_ALLOWEDRANDOMCHARS']."'" ?>)" />
 			</td>
 		</tr>
 
@@ -262,7 +261,7 @@ function update_hidden_input(){
 	</form>
 
 
-	<p style='margin-bottom:0px;margin-top:50px;'><strong><?php print _("Logical circuit physical members"); ?>:</strong></p>
+	<p style='margin-bottom:0px;margin-top:50px;'><strong><?php print _("Logical circuit members"); ?>:</strong></p>
 
 	<table class="table table-striped table-condensed table-top table-no-bordered" id='selected_circuits'>
 		<thead>
@@ -326,7 +325,7 @@ function update_hidden_input(){
 <!-- All circuit table -->
 <div class="pContent" style="<?php if( $_POST['action'] == "delete") { echo "display:none;"; } ?>; padding-top:50px;" >
 
-	<p style='margin-bottom:0px;'><strong><?php print _("Available physical circuits"); ?>:</strong></p>
+	<p style='margin-bottom:0px;'><strong><?php print _("Available circuits"); ?>:</strong></p>
 
 	<table id="all_circuits" class="table table-striped table-condensed table-top table-no-bordered">
 		<thead>
@@ -379,7 +378,7 @@ function update_hidden_input(){
 		<button class="btn btn-sm btn-default hidePopups"><?php print _('Cancel'); ?></button>
 		<button class="btn btn-sm btn-default submit_popup <?php if($_POST['action']=="delete") { print "btn-danger"; } else { print "btn-success"; } ?>" data-script="app/admin/circuits/edit-logical-circuit-submit.php" data-result_div="circuitManagementEditResult" data-form='circuitManagementEdit'>
 			<i class="fa <?php if($_POST['action']=="add") { print "fa-plus"; } else if ($_POST['action']=="delete") { print "fa-trash-o"; } else { print "fa-check"; } ?>"></i>
-			<?php print escape_input(ucwords(_($_POST['action']))); ?>
+			<?php print ucwords(_($_POST['action'])); ?>
 		</button>
 	</div>
 

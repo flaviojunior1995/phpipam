@@ -7,11 +7,6 @@
 class Tools extends Common_functions {
 
 	/**
-	 * var Subnets
-	 */
-	private $Subnets = null;
-
-	/**
 	 * CSV delimiter
 	 *
 	 * @var string
@@ -441,6 +436,42 @@ class Tools extends Common_functions {
 	    return $search;
 	}
 
+	/**
+	 * Search for circuits_customer.
+	 *
+	 * @access public
+	 * @param mixed $search_term
+	 * @param array $custom_circuit_fields (default: array())
+	 * @return array
+	 */
+	public function search_circuits_customer ($search_term, $custom_circuit_fields = array()) {
+		# query
+		$query[] = "select c.*,p.name,p.description,p.contact,p.id as pid ";
+		$query[] = "from circuits as c, circuitProviders as p ";
+		$query[] = "where c.provider = p.id and ctype = 'customer'";
+		$query[] = "and (`cid` like :search_term or `type` like :search_term or `capacity` like :search_term or `comment` like :search_term or `name` like :search_term";
+		# custom
+	    if(sizeof($custom_circuit_fields) > 0) {
+			foreach($custom_circuit_fields as $myField) {
+				$myField['name'] = $this->Database->escape($myField['name']);
+				$query[] = " or `$myField[name]` like :search_term ";
+			}
+		}
+
+		$query[] = ") order by c.cid asc;";
+		# join query
+		$query = implode("\n", $query);
+
+		# fetch
+		try { $search = $this->Database->getObjectsQuery($query, array("search_term"=>"%$search_term%")); }
+		catch (Exception $e) {
+			$this->Result->show("danger", _("Error: ").$e->getMessage());
+			return false;
+		}
+
+	    # return result
+	    return $search;
+	}
 
 	/**
 	 * Search for circuit providers
@@ -2846,6 +2877,134 @@ class Tools extends Common_functions {
 			}
 		}
 		$query[] = "from circuits as c, circuitProviders as p where c.provider = p.id";
+		$query[] = "order by c.cid asc;";
+		// fetch
+		try { $circuits = $this->Database->getObjectsQuery(implode("\n", $query), array()); }
+		catch (Exception $e) {
+			$this->Result->show("danger", $e->getMessage(), true);
+		}
+		// return
+		return sizeof($circuits)>0 ? $circuits : false;
+	}
+
+	/**
+	 * Fetches all circuits_network from database
+	 *
+	 * @method fetch_all_circuits_network
+	 *
+	 * @param  array $custom_circuit_fields
+	 *
+	 * @return false|array
+	 */
+	public function fetch_all_circuits_network ($custom_circuit_fields = array ()) {
+		// set query
+		$query[] = "select";
+		$query[] = "c.id,c.cid,c.type,c.device1,c.location1,c.device2,c.location2,c.comment,c.customer_id,p.name,p.description,p.contact,c.capacity,p.id as pid,c.status,c.partner,c.address1,c.address2,c.dwdmchannel,c.pwid,.c.route_distinguisher";
+		// custom fields
+		if(is_array($custom_circuit_fields)) {
+			if(sizeof($custom_circuit_fields)>0) {
+				foreach ($custom_circuit_fields as $f) {
+					$query[] = ",c.`".$f['name']."`";
+				}
+			}
+		}
+		$query[] = "from circuits as c, circuitProviders as p where c.provider = p.id and ctype = 'network'";
+		$query[] = "order by c.cid asc;";
+		// fetch
+		try { $circuits = $this->Database->getObjectsQuery(implode("\n", $query), array()); }
+		catch (Exception $e) {
+			$this->Result->show("danger", $e->getMessage(), true);
+		}
+		// return
+		return sizeof($circuits)>0 ? $circuits : false;
+	}
+
+	/**
+	 * Fetches all circuits_dwdm from database
+	 *
+	 * @method fetch_all_circuits_dwdm
+	 *
+	 * @param  array $custom_circuit_fields
+	 *
+	 * @return false|array
+	 */
+	public function fetch_all_circuits_dwdm ($custom_circuit_fields = array ()) {
+		// set query
+		$query[] = "select";
+		$query[] = "c.id,c.cid,c.type,c.location1,c.location2,c.comment,c.customer_id,p.name,p.description,p.contact,c.capacity,p.id as pid,c.status,c.dwdmchannel";
+		// custom fields
+		if(is_array($custom_circuit_fields)) {
+			if(sizeof($custom_circuit_fields)>0) {
+				foreach ($custom_circuit_fields as $f) {
+					$query[] = ",c.`".$f['name']."`";
+				}
+			}
+		}
+		$query[] = "from circuits as c, circuitProviders as p where c.provider = p.id and ctype = 'dwdm'";
+		$query[] = "order by c.cid asc;";
+		// fetch
+		try { $circuits = $this->Database->getObjectsQuery(implode("\n", $query), array()); }
+		catch (Exception $e) {
+			$this->Result->show("danger", $e->getMessage(), true);
+		}
+		// return
+		return sizeof($circuits)>0 ? $circuits : false;
+	}
+
+	/**
+	 * Fetches all circuits_dwdm from database
+	 *
+	 * @method fetch_all_circuits_darkfiber
+	 *
+	 * @param  array $custom_circuit_fields
+	 *
+	 * @return false|array
+	 */
+	public function fetch_all_circuits_darkfiber ($custom_circuit_fields = array ()) {
+		// set query
+		$query[] = "select";
+		$query[] = "c.id,c.cid,c.type,c.location1,c.location2,c.comment,c.customer_id,p.name,p.description,p.contact,p.id as pid,c.status,c.address1,c.address2";
+		// custom fields
+		if(is_array($custom_circuit_fields)) {
+			if(sizeof($custom_circuit_fields)>0) {
+				foreach ($custom_circuit_fields as $f) {
+					$query[] = ",c.`".$f['name']."`";
+				}
+			}
+		}
+		$query[] = "from circuits as c, circuitProviders as p where c.provider = p.id and ctype = 'darkfiber'";
+		$query[] = "order by c.cid asc;";
+		// fetch
+		try { $circuits = $this->Database->getObjectsQuery(implode("\n", $query), array()); }
+		catch (Exception $e) {
+			$this->Result->show("danger", $e->getMessage(), true);
+		}
+		// return
+		return sizeof($circuits)>0 ? $circuits : false;
+	}
+
+	/**
+	 * Fetches all circuits_customers from database
+	 *
+	 * @method fetch_all_circuits_customer
+	 *
+	 * @param  array $custom_circuit_fields
+	 *
+	 * @return false|array
+	 */
+	public function fetch_all_circuits_customer ($custom_circuit_fields = array ()) {
+		// set query
+		$query[] = "select";
+		$query[] = "c.id,c.cid,c.type,c.device1,c.location1,c.device2,c.location2,c.comment,c.customer_id,p.name,p.description,p.contact,c.capacity,p.id as pid,c.status";
+		// custom fields
+		if(is_array($custom_circuit_fields)) {
+			if(sizeof($custom_circuit_fields)>0) {
+				foreach ($custom_circuit_fields as $f) {
+					$query[] = ",c.`".$f['name']."`";
+				}
+			}
+		}
+		$query[] = "from circuits as c, circuitProviders as p where c.provider = p.id and ctype = 'customer'";
 		$query[] = "order by c.cid asc;";
 		// fetch
 		try { $circuits = $this->Database->getObjectsQuery(implode("\n", $query), array()); }

@@ -35,7 +35,7 @@ if ($User->get_module_permissions ("circuits")==User::ACCESS_NONE) {
 elseif (!isset($_GET['subnetId']) || (@$_GET['subnetId']=="providers" && !isset($_GET['sPage'])) ) {
 	// all circuits
 	if(!isset($_GET['subnetId'])) {
-		include('physical-circuits/all-circuits.php');
+		include('circuits-network/all-circuits.php');
 	}
 	// all providers
 	else {
@@ -62,8 +62,20 @@ else {
 	elseif ($_GET['subnetId']=="options") {
 		include('options.php');
 	}
+	// dwdm
+	elseif ($_GET['subnetId']=="dwdm") {
+		include('circuits-dwdm/all-circuits.php');
+	}
+	// customers
+	elseif ($_GET['subnetId']=="customers") {
+		include('circuits-customer/all-circuits.php');
+	}
+	// darkfiber
+	elseif ($_GET['subnetId']=="darkfiber") {
+		include('circuits-darkfiber/all-circuits.php');
+	}
 	// specific circuit
 	else {
-		include("physical-circuits/circuit-details.php");
+		include("circuits-network/circuit-details.php");
 	}
 }

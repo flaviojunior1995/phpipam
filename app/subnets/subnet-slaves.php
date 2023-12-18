@@ -192,7 +192,9 @@ foreach ($slave_subnets as $slave_subnet) {
 
 			print "<tr class='success'>";
 			print "	<td></td>";
-			print "	<td class='small description'><a href='#' data-sectionId='$section[id]' data-masterSubnetId='$subnet[id]' class='btn btn-sm btn-default createfromfree' data-cidr='".$Subnets->get_first_possible_subnet($Subnets->transform_to_dotted(gmp_strval(gmp_add($current_slave_bcast, 1))), $diff, false)."'><i class='fa fa-plus'></i></a> "._('Free space')."</td>";
+			if($subnet_permission == 3){
+				print "	<td class='small description'><a href='#' data-sectionId='$section[id]' data-masterSubnetId='$subnet[id]' class='btn btn-sm btn-default createfromfree' data-cidr='".$Subnets->get_first_possible_subnet($Subnets->transform_to_dotted(gmp_strval(gmp_add($current_slave_bcast, 1))), $diff, false)."'><i class='fa fa-plus'></i></a> "._('Free space')."</td>";
+			}
 			print "	<td colspan='$colspan_subnets'>".$Subnets->transform_to_dotted(gmp_strval(gmp_add($current_slave_bcast, 1))) ." - ".$Subnets->transform_to_dotted(gmp_strval(gmp_sub($next_slave_subnet, 1))) ." ( ".gmp_strval(gmp_sub($diff, 1))." )</td>";
 			print "</tr>";
 	}	}	}
@@ -222,7 +224,9 @@ foreach ($slave_subnets as $slave_subnet) {
 		if($max_host > $max_last_slave) {
 			print "<tr class='success'>";
 			print "	<td></td>";
+			if ($subnet_permission==3){
 			print "	<td class='small description'><a href='#' data-sectionId='$section[id]' data-masterSubnetId='$subnet[id]' class='btn btn-sm btn-default createfromfree' data-cidr='".$Subnets->get_first_possible_subnet($Subnets->transform_to_dotted(gmp_strval(gmp_add($max_last_slave,1))), gmp_strval(gmp_sub($max_host,$max_last_slave)), false)."'><i class='fa fa-plus'></i></a> "._('Free space')."</td>";
+			}
 			print "	<td colspan='$colspan_subnets'>". $Subnets->transform_to_dotted(gmp_strval(gmp_add($max_last_slave,1))) ." - ". $Subnets->transform_to_dotted(gmp_strval($max_host)) ." ( ".gmp_strval(gmp_sub($max_host,$max_last_slave))." )</td>";
 			print "</tr>";
 	}	}	}

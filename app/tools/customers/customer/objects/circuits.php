@@ -114,10 +114,10 @@ if (isset($objects["circuits"])) {
 	        if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
 	            $links[] = ["type"=>"divider"];
 	            $links[] = ["type"=>"header", "text"=>_("Manage circuit")];
-	            $links[] = ["type"=>"link", "text"=>_("Edit circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>" data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='edit' data-circuitid='$circuit->id'", "icon"=>"pencil"];
+	            $links[] = ["type"=>"link", "text"=>_("Edit circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>" data-script='app/admin/circuits/edit-network-circuit.php' data-class='700' data-action='edit' data-circuitid='$circuit->id'", "icon"=>"pencil"];
 	        }
 	        if($User->get_module_permissions ("circuits")>=User::ACCESS_RWA) {
-	            $links[] = ["type"=>"link", "text"=>_("Delete circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>"  data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='delete' data-circuitid='$circuit->id'", "icon"=>"times"];
+	            $links[] = ["type"=>"link", "text"=>_("Delete circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>"  data-script='app/admin/circuits/edit-network-circuit.php' data-class='700' data-action='delete' data-circuitid='$circuit->id'", "icon"=>"times"];
 	        }
 	        if($User->get_module_permissions ("customers")>=User::ACCESS_RW) {
 	            $links[] = ["type"=>"divider"];
