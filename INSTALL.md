@@ -116,7 +116,10 @@ systemctl  restart  mariadb
 systemctl  restart apache2
 ```
 
-16. Configure crontab for pingCheck and discoveryCheck:
+16. Install and Configure crontab for pingCheck and discoveryCheck:
+```
+apt install cron
+```
 ```
 crontab -e
 ```
