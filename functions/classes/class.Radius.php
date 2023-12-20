@@ -603,7 +603,7 @@ class Radius
                     $temp_attribute = chr($type).chr(6).chr($ip_array[0]).chr($ip_array[1]).chr($ip_array[2]).chr($ip_array[3]);
                     break;
                 case 'I': // Integer, 32 bit unsigned value, most significant octet first.
-                    $temp_attribute = chr($type).chr(6).chr(($value / (256 * 256 * 256)) % 256).chr(($value / (256 * 256)) % 256).chr(($value / (256)) % 256).chr($value % 256);
+		    $temp_attribute = chr($type).chr(6).chr($value / 256 * 256 * 256 % 256).chr($value / 256 * 256 % 256). chr($value * 256 / 256 % 256 ) .chr($value % 256);
                     break;
                 case 'D': // Time, 32 bit unsigned value, most significant octet first -- seconds since 00:00:00 UTC, January 1, 1970. (not used in this RFC)
                     $temp_attribute = NULL;
