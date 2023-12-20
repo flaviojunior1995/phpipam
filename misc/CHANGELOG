@@ -1,3 +1,15 @@
+== 1.6.0 edited v1.1
+    Bugfixes:
+    ----------------------------
+    + Fix Radius authentication;
+
+== 1.6.0 edited v1
+    Custom changes:
+    ----------------------------
+    + Edit permissions of RWA to W users add new subnets;
+    + Add new fields to DB to customize circuits ( Network Circuits, DWDM Circuits, Dark Fiber Circuits and Logical Circuits );
+    + Add random button to Circuit ID creation;
+
 == 1.6.0
 
     Enhancements, changes:
