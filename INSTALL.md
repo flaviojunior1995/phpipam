@@ -87,8 +87,8 @@ nano /etc/apache2/sites-enabled/000-default.conf
 ```
 cd /tmp
 apt install unzip
-wget https://github.com/flaviojunior1995/phpipam/releases/download/v1.6.0_v1/phpipam-v1.6.0_edited-v1.zip
-unzip phpipam-v1.6.0_edited-v1.zip
+wget https://github.com/flaviojunior1995/phpipam/releases/download/v1.6.0_v1.1/phpipam-v1.6.0_edited-v1.1.zip
+unzip phpipam-v1.6.0_edited-v1.1.zip
 cp -R phpipam/* /var/www/html/
 ```
 
