@@ -1180,7 +1180,7 @@ class User extends Common_functions {
      * @param mixed $password
      * @return void
      */
-    private function auth_radius_legacy ($username, $password) {
+    private function auth_radius ($username, $password) {
         # decode radius parameters
         $params = pf_json_decode($this->authmethodparams);
 
@@ -1239,7 +1239,7 @@ class User extends Common_functions {
      * @param mixed $password
      * @return void
      */
-    private function auth_radius ($username, $password) {
+    private function auth_radius_test ($username, $password) {
         # decode radius parameters
         $params = pf_json_decode($this->authmethodparams);
 
