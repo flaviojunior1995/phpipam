@@ -53,7 +53,7 @@ print "</tr>";
 if ($User->settings->enableCustomers=="1") {
 	$customer = $Tools->fetch_object ("customers", "id", $circuit->customer_id);
 	if($customer===false) {
-		$customer = new StdClass ();
+		$customer = new Params ();
 		$customer->title = "/";
 	}
 print "	<th>". _('Customer').'</th>';
@@ -99,7 +99,7 @@ if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
         $links = [];
         $links[] = ["type"=>"header", "text"=>_("Manage circuit")];
         $links[] = ["type"=>"link", "text"=>_("Edit circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>" data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='edit' data-circuitid='$circuit->id'", "icon"=>"pencil"];
-        if($User->get_module_permissions ("circuits")>=User::ACCESS_RWA) {
+        if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
             $links[] = ["type"=>"link", "text"=>_("Delete circuit"), "href"=>"", "class"=>"open_popup", "dataparams"=>"  data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='delete' data-circuitid='$circuit->id'", "icon"=>"times"];
         }
         // print links

@@ -1,0 +1,58 @@
+{
+    "name": "firehed/webauthn",
+    "description": "Web Authentication",
+    "keywords": [],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eric Stern",
+            "email": "eric@ericstern.com"
+        }
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Firehed\\WebAuthn\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "files": [
+            "examples/functions.php"
+        ],
+        "psr-4": {
+            "Firehed\\WebAuthn\\": "tests"
+        }
+    },
+    "require": {
+        "php": "^8.1",
+        "ext-hash": "*",
+        "ext-openssl": "*",
+        "firehed/cbor": "^0.1.0"
+    },
+    "require-dev": {
+        "maglnet/composer-require-checker": "^4.1",
+        "mheap/phpunit-github-actions-printer": "^1.5",
+        "nikic/php-parser": "^4.14",
+        "phpstan/phpstan": "^1.0",
+        "phpstan/phpstan-phpunit": "^1.0",
+        "phpstan/phpstan-strict-rules": "^1.0",
+        "phpunit/phpunit": "^9.3",
+        "squizlabs/php_codesniffer": "^3.5"
+    },
+    "scripts": {
+        "test": [
+            "@phpunit",
+            "@phpstan",
+            "@phpcs"
+        ],
+        "autofix": "phpcbf",
+        "phpunit": "phpunit",
+        "phpstan": "phpstan analyse",
+        "phpstan-baseline": "phpstan analyse --generate-baseline",
+        "phpcs": "phpcs"
+    }
+}

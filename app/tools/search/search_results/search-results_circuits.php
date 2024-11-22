@@ -8,8 +8,8 @@
 $User->check_user_session();
 
 # get all custom fields
-$custom_circuit_fields   = $_REQUEST['circuits']=="on"  ? $Tools->fetch_custom_fields ("circuits") : array();
-$custom_circuit_p_fields = $_REQUEST['circuits']=="on"  ? $Tools->fetch_custom_fields ("circuitProviders") : array();
+$custom_circuit_fields   = $GET->circuits=="on"  ? $Tools->fetch_custom_fields ("circuits") : array();
+$custom_circuit_p_fields = $GET->circuits=="on"  ? $Tools->fetch_custom_fields ("circuitProviders") : array();
 
 $hidden_circuit_fields   = is_array(@$hidden_fields['circuits']) ? $hidden_fields['circuits'] : array();
 $hidden_circuit_p_fields = is_array(@$hidden_fields['circuitProviders']) ? $hidden_fields['circuitProviders'] : array();
@@ -72,6 +72,12 @@ if(sizeof($result_circuits) > 0) {
 		}
 		# for admins print link
 		print " <td class='actions'>";
+		if($User->is_admin(false)) {
+		print '<div class="btn-group">';
+		print "		<a class='btn btn-xs btn-default open_popup' data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='edit' data-circuitid='$circuit->id'><i class='fa fa-pencil'></i></a>";
+		print "		<a class='btn btn-xs btn-default open_popup' data-script='app/admin/circuits/edit-circuit.php' data-class='700' data-action='delete' data-circuitid='$circuit->id'><i class='fa fa-times'></i></a>";
+		print '</div>';
+		}
 		print "</td>";
 		print '</tr>'. "\n";
     }

@@ -23,13 +23,10 @@ $User->check_module_permissions ("circuits", User::ACCESS_R, true, false);
 # filter circuits or fetch print all?
 $circuit_providers = $Tools->fetch_all_objects("circuitProviders", "name");
 
-# strip tags - XSS
-$_GET = $User->strip_input_tags ($_GET);
-
 # get custom fields
 $custom_fields = $Tools->fetch_custom_fields('circuitProviders');
 # get hidden fields */
-$hidden_fields = pf_json_decode($User->settings->hiddenCustomFields, true);
+$hidden_fields = db_json_decode($User->settings->hiddenCustomFields, true);
 $hidden_fields = is_array(@$hidden_fields['circuitProviders']) ? $hidden_fields['circuitProviders'] : array();
 
 # title
@@ -39,7 +36,7 @@ print "<hr>";
 # print link to manage
 print "<div class='btn-group'>";
 	// add
-	if($User->get_module_permissions ("circuits")>=User::ACCESS_RWA) {
+	if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
     print "<a href='' class='btn btn-sm btn-default open_popup' data-script='app/admin/circuits/edit-provider.php' data-class='700' data-action='add' data-providerid='' style='margin-bottom:10px;'><i class='fa fa-plus'></i> "._('Add provider')."</a>";
 	}
 print "</div>";
@@ -69,7 +66,7 @@ print "</thead>";
 
 // no circuits
 if($circuit_providers===false) {
-	$colspan = 3 + $colspanCustom;
+	$colspan = 5 + $colspanCustom;
 	print "<tr>";
 	print "	<td colspan='$colspan'>".$Result->show('info', _('No results')."!", false, false, true)."</td>";
 	print "</tr>";
@@ -81,7 +78,7 @@ else {
 		$cnt = $Database->numObjectsFilter("circuits", "provider", $provider->id);
 		//print details
 		print '<tr>'. "\n";
-		print "	<td><strong><a class='btn btn-xs btn-default' href='".create_link($_GET['page'],"circuits","providers",$provider->id)."'>$provider->name</a></strong></td>";
+		print "	<td><strong><a class='btn btn-xs btn-default' href='".create_link($GET->page,"circuits","providers",$provider->id)."'>$provider->name</a></strong></td>";
 		print "	<td>$provider->description</td>";
 		print "	<td>$cnt "._("Circuits")."</td>";
 		print " <td>$provider->contact</td>";
@@ -101,13 +98,13 @@ else {
         print "<td class='actions'>";
         $links = [];
         $links[] = ["type"=>"header", "text"=>_("View")];
-        $links[] = ["type"=>"link", "text"=>_("Show provider"), "href"=>create_link($_GET['page'], "circuits","providers",$provider->id), "icon"=>"eye", "visible"=>"dropdown"];
+        $links[] = ["type"=>"link", "text"=>_("Show provider"), "href"=>create_link($GET->page, "circuits","providers",$provider->id), "icon"=>"eye", "visible"=>"dropdown"];
         $links[] = ["type"=>"divider"];
         if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
             $links[] = ["type"=>"header", "text"=>_("Manage provider")];
             $links[] = ["type"=>"link", "text"=>_("Edit provider"), "href"=>"", "class"=>"open_popup", "dataparams"=>"  data-script='app/admin/circuits/edit-provider.php' data-class='700' data-action='edit' data-providerid='$provider->id'", "icon"=>"pencil"];
         }
-        if($User->get_module_permissions ("circuits")>=User::ACCESS_RWA) {
+        if($User->get_module_permissions ("circuits")>=User::ACCESS_RW) {
             $links[] = ["type"=>"link", "text"=>_("Delete provider"), "href"=>"", "class"=>"open_popup", "dataparams"=>"  data-script='app/admin/circuits/edit-provider.php' data-class='700' data-action='delete' data-providerid='$provider->id'", "icon"=>"times"];
             $links[] = ["type"=>"divider"];
         }

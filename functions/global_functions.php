@@ -84,7 +84,7 @@ function is_blank($data) {
 function escape_input($data) {
 	if (is_blank($data))
 		return '';
-	$safe_data = htmlentities($data, ENT_QUOTES);
+	$safe_data = htmlentities($data, ENT_QUOTES, 'UTF-8');
 	return is_string($safe_data) ? $safe_data : '';
 }
 
@@ -145,7 +145,7 @@ function set_ui_language($default_lang = null) {
 	// remove ;q= (q-factor weighting)
 	$http_accept_langs = preg_replace("/;.*$/", "", $http_accept_langs);
 
-	// Try each langage in order of preference
+	// Try each language in order of preference
 	$langs = array_merge([$user_lang, $default_lang, $sys_lang], $http_accept_langs);
 
 	foreach($langs as $lang) {
@@ -182,9 +182,10 @@ function set_ui_language($default_lang = null) {
  * @param   mixed $value
  * @param   int $lifetime
  * @param   bool $httponly
+ * @param   bool $secure
  * @return  void
  */
-function setcookie_samesite($name, $value, $lifetime, $httponly=false) {
+function setcookie_samesite($name, $value, $lifetime, $httponly=false, $secure=false) {
 
 	$lifetime = (int) $lifetime;
 
@@ -201,10 +202,31 @@ function setcookie_samesite($name, $value, $lifetime, $httponly=false) {
 	$samesite = Config::ValueOf("cookie_samesite", "Lax");
 	if (!in_array($samesite, ["None", "Lax", "Strict"])) $samesite="Lax";
 
-	$secure = ($samesite=="None") ? " Secure;" : '';
-	$httponly = $httponly ? ' HttpOnly;' : '';
+	$Secure = ($secure || $samesite=="None") ? " Secure;" : '';
+	$HttpOnly = $httponly ? ' HttpOnly;' : '';
 
-	header("Set-Cookie: $name=$value; expires=$expire_date; Max-Age=$lifetime; path=/; SameSite=$samesite;".$secure.$httponly);
+	header("Set-Cookie: $name=$value; expires=$expire_date; Max-Age=$lifetime; path=/; SameSite=$samesite;".$Secure.$HttpOnly);
+}
+
+/**
+ * Decodes a JSON string
+ *
+ * @param string $json
+ * @param bool $associative
+ * @param integer $depth
+ * @param integer $flags
+ * @return mixed
+ */
+function db_json_decode($json, $associative = null, $depth = 512, $flags = 0) {
+    if (!is_string($json) || strlen($json) < 2)
+        return null;
+
+    // class.PDO runs html_entity_encode() on strings, revert and decode
+    if (substr($json, 1, 6) == '&quot;') {
+        $json = html_entity_decode($json, ENT_QUOTES);
+    }
+
+    return json_decode($json, $associative, $depth, $flags);
 }
 
 // Include backwards compatibility wrapper functions.

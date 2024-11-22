@@ -1,0 +1,39 @@
+{
+    "name": "firehed/cbor",
+    "description": "CBOR decoder",
+    "type": "library",
+    "keywords": [
+        "CBOR"
+    ],
+    "homepage": "https://github.com/Firehed/CBOR",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Eric Stern",
+            "email": "eric@ericstern.com"
+        }
+    ],
+    "support": {
+      "issues": "https://github.com/Firehed/cbor-php/issues"
+    },
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^8.1"
+    },
+    "suggest": {
+        "ext-bcmath": "Enables parsing of very large values"
+    },
+    "autoload": {
+        "psr-4": {
+            "Firehed\\CBOR\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Firehed\\CBOR\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

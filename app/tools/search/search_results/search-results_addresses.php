@@ -4,7 +4,7 @@
 $User->check_user_session();
 
 # get all custom fields
-$custom_address_fields = $Params->addresses=="on" ? $Tools->fetch_custom_fields ("ipaddresses") : array();
+$custom_address_fields = $GET->addresses=="on" ? $Tools->fetch_custom_fields ("ipaddresses") : array();
 $hidden_address_fields = isset($hidden_fields['ipaddresses']) ? $hidden_fields['ipaddresses'] : array();
 
 # search addresses
@@ -41,8 +41,8 @@ $result_addresses = $Tools->search_addresses($searchTerm, $searchTerm_edited['hi
 	}
 	# owner and note
 	if( (in_array('owner', $selected_ip_fields)) && (in_array('note', $selected_ip_fields)) ) { print '<th class="hidden-sm hidden-xs">'._('Owner').'</th><th></th>'. "\n"; $address_span=$address_span+2; }
-	else if (in_array('owner', $selected_ip_fields)) 								{ print '<th class="hidden-sm hidden-xs">'._('Owner').'</th>'. "\n"; $address_span++; }
-	else if (in_array('note', $selected_ip_fields)) 								{ print '<th></th>'. "\n"; $address_span++; }
+	elseif (in_array('owner', $selected_ip_fields)) 								{ print '<th class="hidden-sm hidden-xs">'._('Owner').'</th>'. "\n"; $address_span++; }
+	elseif (in_array('note', $selected_ip_fields)) 								{ print '<th></th>'. "\n"; $address_span++; }
 
 	# custom fields
 	if(sizeof($custom_address_fields) > 0) {
@@ -63,10 +63,10 @@ $result_addresses = $Tools->search_addresses($searchTerm, $searchTerm_edited['hi
 <?php
 
 $m = 0;		//for section change
-$n = 0;		//fpr ermission and result count
+$n = 0;		//for permission and result count
 
 /* if no result print nothing found */
-if(sizeof($result_addresses) > 0) {
+if(is_array($result_addresses)) {
 	/* print content */
 	foreach ($result_addresses as $line) {
 		# cast
@@ -93,7 +93,6 @@ if(sizeof($result_addresses) > 0) {
 				}
 				print '</tr>';
 			}
-			$m++;
 
 			//print table
 			print '<tr class="ipSearch" id="'. $line['id'] .'" subnetId="'. $line['subnetId'] .'" sectionId="'. $subnet['sectionId'] .'" link="'. $section['name'] .'|'. $subnet['id'] .'">'. "\n";
@@ -123,7 +122,7 @@ if(sizeof($result_addresses) > 0) {
 					if ($User->settings->enableRACK == "1" && $User->get_module_permissions("racks") >= User::ACCESS_R && $device->rack > 0) {
 						$rack = "<i class='btn btn-default btn-xs fa fa-server showRackPopup' data-rackid='" . $device->rack . "' data-deviceid='" . $device->id . "'></i>";
 					}
-					print "<td class='hidden-xs hidden-sm hidden-md'>$rack<a href='" . create_link("tools", "devices", $device->id) . "'>" . escape_input($device->hostname) . "</a></td>";
+					print "<td class='hidden-xs hidden-sm hidden-md'>$rack<a href='" . create_link("tools", "devices", $device->id) . "'>" . $device->hostname . "</a></td>";
 				} else {
 					print "<td class='hidden-xs hidden-sm hidden-md'></td>";
 				}
@@ -133,7 +132,7 @@ if(sizeof($result_addresses) > 0) {
 			//location
 			if(in_array('location', $selected_ip_fields) && $User->get_module_permissions ("locations")>=User::ACCESS_R) {
 				$location_name = $Tools->fetch_object("locations", "id", $line['location']);
-				print ' <td>'. $location_name->name .'</td>' . "\n";
+				print ' <td>' . (is_object($location_name) ? $location_name->name : '') . '</td>' . "\n";
 			}
 			//owner and note
 			if((in_array('owner', $selected_ip_fields)) && (in_array('note', $selected_ip_fields)) ) {
@@ -146,9 +145,9 @@ if(sizeof($result_addresses) > 0) {
 				print '</td>'. "\n";
 			}
 			//owner only
-			else if (in_array('owner', $selected_ip_fields)) 								{ print ' <td class="hidden-sm hidden-xs">'. $line['owner']  .'</td>' . "\n";	}
+			elseif (in_array('owner', $selected_ip_fields)) 								{ print ' <td class="hidden-sm hidden-xs">'. $line['owner']  .'</td>' . "\n";	}
 			//note only
-			else if (in_array('note', $selected_ip_fields)) {
+			elseif (in_array('note', $selected_ip_fields)) {
 				print '<td class="note">' . "\n";
 				if(!empty($line['note'])) {
 					$line['note'] = str_replace("\n", "<br>",$line['note']);
@@ -184,8 +183,9 @@ if(sizeof($result_addresses) > 0) {
 			print "	</div>";
 			print "</td>";
 
-		print '</tr>' . "\n";
-	}
+			print '</tr>' . "\n";
+		}
+		$m++;
 	}
 }
 ?>

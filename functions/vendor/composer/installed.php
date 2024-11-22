@@ -1,0 +1,52 @@
+<?php return array(
+    'root' => array(
+        'name' => '__root__',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => null,
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'dev' => true,
+    ),
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => null,
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'dapphp/radius' => array(
+            'pretty_version' => 'v3.0.0',
+            'version' => '3.0.0.0',
+            'reference' => '023f538e46d20fa285f55dd65d7054fb9b370a82',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../dapphp/radius',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'firehed/cbor' => array(
+            'pretty_version' => '0.1.0',
+            'version' => '0.1.0.0',
+            'reference' => 'eef67b1b5fdf90a3688fc8d9d13afdaf342c4b80',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../firehed/cbor',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'firehed/webauthn' => array(
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => 'e263a3553360d63131af707f3e563b151f4661b9',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../firehed/webauthn',
+            'aliases' => array(
+                0 => '9999999-dev',
+            ),
+            'dev_requirement' => false,
+        ),
+    ),
+);

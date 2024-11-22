@@ -18,10 +18,13 @@ require( dirname(__FILE__) . '/../../../functions/include-only.php' );
 $User->check_user_session();
 
 # get hidden fields
-$hidden_circuit_fields = json_decode($User->settings->hiddenCustomFields, true);
+$hidden_circuit_fields = db_json_decode($User->settings->hiddenCustomFields, true);
 $hidden_circuit_fields = is_array(@$hidden_circuit_fields['circuits']) ? $hidden_circuit_fields['circuits'] : array();
 
-$hidden_provider_fields = json_decode($User->settings->hiddenCustomFields, true);
+$hidden_logical_fields = db_json_decode($User->settings->hiddenCustomFields, true);
+$hidden_logical_fields = is_array(@$hidden_logical_fields['circuits']) ? $hidden_logical_fields['circuitsLogical'] : array();
+
+$hidden_provider_fields = db_json_decode($User->settings->hiddenCustomFields, true);
 $hidden_provider_fields = is_array(@$hidden_provider_fields['circuitProviders']) ? $hidden_provider_fields['circuitProviders'] : array();
 
 # menu
@@ -32,10 +35,10 @@ if ($User->get_module_permissions ("circuits")==User::ACCESS_NONE) {
 	$Result->show("danger", _("You do not have permissions to access this module"), false);
 }
 # load subpage
-elseif (!isset($_GET['subnetId']) || (@$_GET['subnetId']=="providers" && !isset($_GET['sPage'])) ) {
+elseif (!isset($GET->subnetId) || ($GET->subnetId=="providers" && !isset($GET->sPage)) ) {
 	// all circuits
-	if(!isset($_GET['subnetId'])) {
-		include('circuits-network/all-circuits.php');
+	if(!isset($GET->subnetId)) {
+		include('physical-circuits/all-circuits.php');
 	}
 	// all providers
 	else {
@@ -44,38 +47,26 @@ elseif (!isset($_GET['subnetId']) || (@$_GET['subnetId']=="providers" && !isset(
 }
 else {
 	// specific provider
-	if($_GET['subnetId']=="providers") {
+	if($GET->subnetId=="providers") {
 		include("providers/provider-details.php");
 	}
-	elseif ($_GET['subnetId']=="logical") {
-		if(isset($_GET["sPage"])){
+	elseif ($GET->subnetId=="logical") {
+		if(isset($GET->sPage)){
 			include("logical-circuits/logical-circuit-details.php");
 		}else{
 			include('logical-circuits/logical-circuits.php');
 		}
 	}
 	// map
-	elseif ($_GET['subnetId']=="circuit_map") {
+	elseif ($GET->subnetId=="circuit_map") {
 		include('all-circuits-map.php');
 	}
 	// settings
-	elseif ($_GET['subnetId']=="options") {
+	elseif ($GET->subnetId=="options") {
 		include('options.php');
-	}
-	// dwdm
-	elseif ($_GET['subnetId']=="dwdm") {
-		include('circuits-dwdm/all-circuits.php');
-	}
-	// customers
-	elseif ($_GET['subnetId']=="customers") {
-		include('circuits-customer/all-circuits.php');
-	}
-	// darkfiber
-	elseif ($_GET['subnetId']=="darkfiber") {
-		include('circuits-darkfiber/all-circuits.php');
 	}
 	// specific circuit
 	else {
-		include("circuits-network/circuit-details.php");
+		include("physical-circuits/circuit-details.php");
 	}
 }

@@ -78,12 +78,12 @@ else {
 	<tr>
 		<th><?php print _('Hierarchy'); ?></th>
 		<td>
-			<?php $Subnets->print_breadcrumbs($Sections, $Subnets, $_GET); ?>
+			<?php $Subnets->print_breadcrumbs($Sections, $Subnets, $GET->as_array()); ?>
 		</td>
 	</tr>
 	<tr>
 		<th><?php print _('Subnet description'); ?></th>
-		<td><?php print escape_input($subnet['description']); ?></td>
+		<td><?php print $subnet['description']; ?></td>
 	</tr>
 
 	<tr>
@@ -225,6 +225,7 @@ else {
 			$device = $Tools->fetch_object("devices", "id", $subnet['device']);
 			if (is_object($device)) {
 				# rack
+				$rack_text = "";
 				if ($User->settings->enableRACK=="1" && !is_blank($device->rack) && $User->get_module_permissions ("racks")>=User::ACCESS_RW) {
 					if (!isset($Racks)) $Racks = new phpipam_rack($Database);
 					$Racks->add_rack_start_print($device);
@@ -532,8 +533,8 @@ else {
 
 	# check for temporary shares!
 	if($User->settings->tempShare==1) {
-		if (is_array(pf_json_decode($User->settings->tempAccess, true))) {
-			foreach(pf_json_decode($User->settings->tempAccess) as $s) {
+		if (is_array(db_json_decode($User->settings->tempAccess, true))) {
+			foreach(db_json_decode($User->settings->tempAccess) as $s) {
 				if($s->type=="subnets" && $s->id==$subnet['id']) {
 					if(time()<$s->validity) {
 						$active_shares[] = $s;
@@ -605,8 +606,8 @@ else {
 		$sp['changelog'] = false;		//changelog view
 		$sp['import'] 	 = false;		//import
 	}
-	else if ($subnet_permission == 2) {
-		$sp['editsubnet']= false;		//edit subnet
+	elseif ($subnet_permission == 2) {
+		$sp['editsubnet']= true;		//edit subnet
 		$sp['editperm']  = false;		//edit permissions
 
 		$sp['addip'] 	 = true;		//add ip address
@@ -614,7 +615,7 @@ else {
 		$sp['changelog'] = true;		//changelog view
 		$sp['import'] 	 = true;		//import
 	}
-	else if ($subnet_permission == 3) {
+	elseif ($subnet_permission == 3) {
 		$sp['editsubnet']= true;		//edit subnet
 		$sp['editperm']  = true;		//edit permissions
 
@@ -631,17 +632,15 @@ else {
 		print "<button class='btn btn-xs btn-default btn-danger' 	data-container='body' rel='tooltip' title='"._('You do not have permissions to edit subnet or IP addresses')."'>													<i class='fa fa-lock'></i></button> ";
 		# edit subnet
 		if($sp['editsubnet'])
-		////print "<a class='edit_subnet btn btn-xs btn-default' 	href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."'	data-subnetId='$subnet[id]' data-sectionId='$subnet[sectionId]' data-action='edit'>	<i class='fa fa-pencil'></i></a>";
-		print "<a class='edit_subnet btn btn-xs btn-default' href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."' data-subnetId='$subnet[id]' data-sectionId='$subnet[sectionId]' data-action='edit'> <i class='fa fa-pencil'></i></a> <a class='edit_subnet btn btn-xs btn-default ' href='' data-container='body' rel='tooltip' title='"._('Add new nested subnet')."' data-subnetId='$subnet[id]' data-action='add' data-id='' data-sectionId='$subnet[sectionId]'> <i class='fa fa-plus-circle'></i></a>"; 
+		print "<a class='edit_subnet btn btn-xs btn-default' 	href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."'	data-subnetId='$subnet[id]' data-sectionId='$subnet[sectionId]' data-action='edit'>	<i class='fa fa-pencil'></i></a>";
 		else
-		////print "<a class='btn btn-xs btn-default disabled' 		href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."'>																					<i class='fa fa-pencil'></i></a>";
-		print "<a class='btn btn-xs btn-default disabled' href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."'> <i class='fa fa-pencil'></i></a> <a class='btn btn-xs btn-default disabled' href=''> <i class='fa fa-plus-circle'></i></a> "; 
+		print "<a class='btn btn-xs btn-default disabled' 		href='' data-container='body' rel='tooltip' title='"._('Edit subnet properties')."'>																					<i class='fa fa-pencil'></i></a>";
 		# add nested subnet
-		////if($section_permission == 3) {
-		////print "<a class='edit_subnet btn btn-xs btn-default '	href='' data-container='body' rel='tooltip' title='"._('Add new nested subnet')."' 		data-subnetId='$subnet[id]' data-action='add' data-id='' data-sectionId='$subnet[sectionId]'> <i class='fa fa-plus-circle'></i></a> ";
-		////} else {
-		////print "<a class='btn btn-xs btn-default disabled' 		href=''> 																																											  <i class='fa fa-plus-circle'></i></a> ";
-		////}
+		if($section_permission == 3) {
+		print "<a class='edit_subnet btn btn-xs btn-default '	href='' data-container='body' rel='tooltip' title='"._('Add new nested subnet')."' 		data-subnetId='$subnet[id]' data-action='add' data-id='' data-sectionId='$subnet[sectionId]'> <i class='fa fa-plus-circle'></i></a> ";
+		} else {
+		print "<a class='btn btn-xs btn-default disabled' 		href=''> 																																											  <i class='fa fa-plus-circle'></i></a> ";
+		}
 		# permissions
 		if($sp['editperm'])
 		print "<a class='showSubnetPerm btn btn-xs btn-default' href='' data-container='body' rel='tooltip' title='"._('Manage subnet permissions')."'	data-subnetId='$subnet[id]' data-sectionId='$subnet[sectionId]' data-action='show'>	<i class='fa fa-tasks'></i></a>";
@@ -706,7 +705,7 @@ else {
 	print "</div>";
 
 		# firewall address object actions
-		$firewallZoneSettings = json_decode($User->settings->firewallZoneSettings,true);
+		$firewallZoneSettings = db_json_decode($User->settings->firewallZoneSettings,true);
 		if ( $User->settings->enableFirewallZones == 1 && $subnet_permission > 1) {
 			print "<div class='btn-group'>";
 			print "<a class='subnet_to_zone btn btn-xs btn-default".(($fwZone == false) ? '':' disabled')."' href='' data-container='body' rel='tooltip' title='"._('Map subnet to firewall zone')."' data-subnetId='$subnet[id]' data-operation='subnet2zone'><i class='fa fa-fire'></i></a>";
